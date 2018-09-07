@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  
 }
 
 .App-logo {
@@ -28,5 +29,20 @@
 }
 
 body {
-  background-color: aquamarine;
+  background-color:lightskyblue;
+  font-family: 'Noto Serif KR', sans-serif;
+
 }
+
+.entry-textarea {
+  width: 80%;
+  height: 50%;
+  margin: auto;
+}
+.today-date {
+  display: block;
+}
+/* .display-date {
+  position: absolute;
+  margin-left: 10%;
+} */

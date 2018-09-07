@@ -27,14 +27,15 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div>
-          <h2>{this.state.month} {this.state.date} </h2>
-          <h2>{this.state.year} </h2>
+        <div className="today-date"> 
+          <h2 className = "display-date" >{this.state.month} {this.state.date} {this.state.year} </h2>
           <h2> {this.state.prompt} </h2>
         </div>
         <form>
-          <textarea className= "form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-          <button type="button" className="btn btn-primary">Primary</button>
+        <div class="form-group">
+          <textarea className= "form-control entry-textarea" id="exampleFormControlTextarea1" rows="3"></textarea>
+        </div>
+          <button type="button" className="btn btn-primary">Save</button>
         </form>
       </div>
     );
