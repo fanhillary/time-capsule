@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { Panel } from 'react-bootstrap';
+
+
 import './App.css';
 import {auth, db} from "./firebase.js";
 const settings = {timestampsInSnapshots: true};
@@ -37,21 +40,22 @@ class App extends Component {
         this.setState({ prompt: data['prompt']});
         this.setState({ entries: data['entry']});
         this.setState({ currentEntry: data['entry'][0]});
-        this.setState({ previousEntries: data['entry'].splice(1,data['entry'].length-1)});
+
+        // At least 5 previous entries
+        var prevEntries5Years = data['entry'].splice(1,data['entry'].length-1);
+        for (var i = 0; i< 5; i++) {
+          if(!prevEntries5Years[i]) {
+            prevEntries5Years.push("You haven't logged up to here yet");
+          }
+        }
+        this.setState({ previousEntries: prevEntries5Years});
+        console.log(this.state.previousEntries);
       } else {
         console.log("no document found in firestore");
       }
     }).catch(function(error) {
       console.log("error getting doc:" + error);
     });
-
-    // At least 5 previous entries
-    for (var i = 0; i< 5; i++) {
-      if(!this.state.previousEntries[i]) {
-        this.state.previousEntries.push("You haven't logged up to here yet");
-      }
-    }
-    console.log(this.state.previousEntries);
   }
 
 
@@ -94,21 +98,27 @@ class App extends Component {
         
             {this.state.previousEntries.map(function(item, i){
               return 
-              <div className="card" key={i}>
-                <div className="card-header" id={"heading" + i}>
-                  <h5 className="mb-0">
-                    <button className="btn btn-link" type="button" data-toggle="collapse" data-target={"#collapse" + i} aria-expanded="true" aria-controls={"collapse" + i}>
-                      {this.state.year - i}
-                    </button>
-                  </h5>
-                </div>
+              // <div className="card" key={i}>
+              //   <div className="card-header" id={"heading" + i}>
+              //     <h5 className="mb-0">
+              //       <button className="btn btn-link" type="button" data-toggle="collapse" data-target={"#collapse" + i} aria-expanded="true" aria-controls={"collapse" + i}>
+              //         {this.state.year - i}
+              //       </button>
+              //     </h5>
+              //   </div>
 
-                <div id={"collapse" + i} className="collapse show" aria-labelledby={"heading" + i} data-parent="#accordion">
-                  <div className="card-body">
-                    item
-                  </div>
-                </div>
-              </div>
+              //   <div id={"collapse" + i} className="collapse show" aria-labelledby={"heading" + i} data-parent="#accordion">
+              //     <div className="card-body">
+              //       {item}
+              //     </div>
+              //   </div>
+              // </div>
+              <Panel key ={i}>
+                <Panel.Heading>
+                  <Panel.Title componentClass="h3">2017</Panel.Title>
+                </Panel.Heading>
+                <Panel.Body> {item} </Panel.Body>
+              </Panel>
             })}
         </div>
       </div>
