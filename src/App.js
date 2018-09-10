@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Panel } from 'react-bootstrap';
+import { Alert, Panel } from 'react-bootstrap';
 
 
 import './App.css';
@@ -77,6 +77,10 @@ class App extends Component {
     }).catch(function(error) {
       console.error("Error writing doc to firebase:", error);
     });
+    document.getElementById("entrySaveAlert").style.opacity = "1";
+    setTimeout(function(){ document.getElementById("entrySaveAlert").style.opacity = "0";
+  }, 2000);
+
   }
 
   render() {
@@ -88,10 +92,14 @@ class App extends Component {
         </div>
         <form>
           <div className="form-group">
-            <textarea className= "form-control entry-textarea" placeholder="Enter today's entry" value={this.state.entries[0]} id="entry" rows="3"></textarea>
+            <textarea className= "form-control entry-textarea" placeholder="Enter today's entry" value={this.state.currentEntry} onChange={e => this.setState({ currentEntry: e.value})} id="entry" rows="3"></textarea>
           </div>
           <button onClick={this.updateEntry} type="button" className="btn btn-primary">Save</button>
         </form>
+
+         <Alert id="entrySaveAlert" bsStyle="success">
+          <strong> Entry successfully saved! </strong>
+        </Alert>
 
 
         <div className="accordion" id="accordion">

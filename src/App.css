@@ -52,3 +52,12 @@ body {
   position: absolute;
   margin-left: 10%;
 } */
+
+
+#entrySaveAlert {
+  width: 80%;
+  margin: auto;
+  margin-top: 10px;
+  opacity: 0;
+  transition: opacity 1s 0s linear;
+} 
