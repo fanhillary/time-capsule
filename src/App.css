@@ -67,3 +67,17 @@ body {
   opacity: 0;
   transition: opacity 1s linear;
 } 
+
+.registerContainer {
+  text-align: center;
+  padding: 10%;
+}
+
+.registerComponent {
+  margin: auto;
+  width: 60%;
+}
+
+.register-input {
+  margin: 10px;
+}
