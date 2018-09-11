@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Alert, Panel } from 'react-bootstrap';
 import './App.css';
 import {auth, db} from "./firebase.js";
 const settings = {timestampsInSnapshots: true};
@@ -126,7 +125,7 @@ class App extends Component {
       <div className="App">
         <div className="today-date"> 
           <h3 className = "display-date" >{this.state.month} {this.state.date}, {this.state.year} </h3>
-          <h2> {this.state.prompt} </h2>
+          <h2 className = "display-prompt"> {this.state.prompt} </h2>
         </div>
         <form>
           <div className="form-group">
@@ -135,36 +134,29 @@ class App extends Component {
           <button id="entrySaveButton" onClick={this.updateEntry} type="button" className="btn btn-primary">Save</button>
         </form>
 
-         <Alert id="entrySaveAlert" bsStyle="success">
-          <strong> Entry successfully saved! </strong>
-        </Alert>
+        <div id="entrySaveAlert" class="alert alert-success" role="alert">
+          Entry successfully saved!        
+        </div>
 
 
         <div className="accordion" id="accordion">
         
-            {this.state.previousEntries.map(function(item, i){
-              return 
-              // <div className="card" key={i}>
-              //   <div className="card-header" id={"heading" + i}>
-              //     <h5 className="mb-0">
-              //       <button className="btn btn-link" type="button" data-toggle="collapse" data-target={"#collapse" + i} aria-expanded="true" aria-controls={"collapse" + i}>
-              //         {this.state.year - i}
-              //       </button>
-              //     </h5>
-              //   </div>
+            {this.state.previousEntries.map((item,i) => {
+              return <div className="card" key={i}>
+                <div className="card-header" id={"heading" + i}>
+                  <h5 className="mb-0">
+                    <button className="btn btn-link" type="button" data-toggle="collapse" data-target={"#collapse" + i} aria-expanded="true" aria-controls={"collapse" + i}>
+                      {this.state.year - (i+1)}
+                    </button>
+                  </h5>
+                </div>
 
-              //   <div id={"collapse" + i} className="collapse show" aria-labelledby={"heading" + i} data-parent="#accordion">
-              //     <div className="card-body">
-              //       {item}
-              //     </div>
-              //   </div>
-              // </div>
-              <Panel key ={i}>
-                <Panel.Heading>
-                  <Panel.Title componentClass="h3">2017</Panel.Title>
-                </Panel.Heading>
-                <Panel.Body> {item} </Panel.Body>
-              </Panel>
+                <div id={"collapse" + i} className="collapse show" aria-labelledby={"heading" + i} data-parent="#accordion">
+                  <div className="card-body">
+                    {item}
+                  </div>
+                </div>
+              </div>
             })}
         </div>
       </div>

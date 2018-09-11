@@ -34,11 +34,17 @@ body {
 
 }
 
+.display-prompt {
+  margin-top: 5%;
+}
+
 .entry-textarea {
   width: 80%;
   height: 100%;
   margin: auto;
+  margin-top: 5%;
 }
+
 .today-date {
   display: block;
 }
