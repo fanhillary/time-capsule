@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
 import { Alert, Panel } from 'react-bootstrap';
-
-
 import './App.css';
 import {auth, db} from "./firebase.js";
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
+// month names for javascript conversion to string
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
+
+// get today's date globally
 var today = new Date();
+
+// const for firestore access to appropriate document
 const docRef = db.collection("prompt-entry").doc(monthNames[today.getMonth()]+ " " + today.getDate());
 
 class App extends Component {
@@ -29,12 +32,22 @@ class App extends Component {
     this.entryHasChanged = this.entryHasChanged.bind(this);
   }
 
+  /*
+  * Function Name: componentDidMount()
+  * Function Description: called after component mounts, get today's state
+  * Paramters: None.
+  * Return: None.
+  */
   componentDidMount() {
+    // update today's state
     this.setState({ month: monthNames[today.getMonth()]});
     this.setState({ date: today.getDate()});
     this.setState({ year: today.getFullYear()});
+
+    // disable the save button upon load
     document.getElementById("entrySaveButton").disabled = true;
 
+    // get today's prompt and previous entries
     docRef.get().then((doc) => {
       if (doc.exists) {
         var data = doc.data()
@@ -43,7 +56,7 @@ class App extends Component {
         this.setState({ entries: data['entry']});
         this.setState({ currentEntry: data['entry'][0]});
 
-        // At least 5 previous entries
+        // convert to at least 5 previous entries
         var prevEntries5Years = data['entry'].splice(1,data['entry'].length-1);
         for (var i = 0; i< 5; i++) {
           if(!prevEntries5Years[i]) {
@@ -71,6 +84,7 @@ class App extends Component {
     var updatedEntries = this.state.entries;
     updatedEntries[0] = document.getElementById("entry").value;
 
+    // update the data for that date on firestore
     docRef.set({
       prompt: this.state.prompt,
       entry: updatedEntries,
@@ -92,7 +106,15 @@ class App extends Component {
 
   }
 
+  /*
+  * Function Name: entryHasChanged(e)
+  * Function Description: Called whenever user types in entry textarea to update state 
+  * and enable save button
+  * Parameters: e - onChange event
+  * Returns: None.
+  */
   entryHasChanged(e) {
+    // update current entry state
     this.setState({ currentEntry: e.value});
 
     // save button enables
