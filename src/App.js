@@ -26,12 +26,14 @@ class App extends Component {
       entries: [],
     }
     this.updateEntry = this.updateEntry.bind(this);
+    this.entryHasChanged = this.entryHasChanged.bind(this);
   }
 
   componentDidMount() {
     this.setState({ month: monthNames[today.getMonth()]});
     this.setState({ date: today.getDate()});
     this.setState({ year: today.getFullYear()});
+    document.getElementById("entrySaveButton").disabled = true;
 
     docRef.get().then((doc) => {
       if (doc.exists) {
@@ -77,10 +79,24 @@ class App extends Component {
     }).catch(function(error) {
       console.error("Error writing doc to firebase:", error);
     });
+
+    // success alert fades in upon save
     document.getElementById("entrySaveAlert").style.opacity = "1";
+    
+    // alert fade out after 2 seconds
     setTimeout(function(){ document.getElementById("entrySaveAlert").style.opacity = "0";
   }, 2000);
 
+    // save button disables
+    document.getElementById("entrySaveButton").disabled = true;
+
+  }
+
+  entryHasChanged(e) {
+    this.setState({ currentEntry: e.value});
+
+    // save button enables
+    document.getElementById("entrySaveButton").disabled = false;
   }
 
   render() {
@@ -92,9 +108,9 @@ class App extends Component {
         </div>
         <form>
           <div className="form-group">
-            <textarea className= "form-control entry-textarea" placeholder="Enter today's entry" value={this.state.currentEntry} onChange={e => this.setState({ currentEntry: e.value})} id="entry" rows="3"></textarea>
+            <textarea className= "form-control entry-textarea" placeholder="Enter today's entry" value={this.state.currentEntry} onChange={e => this.entryHasChanged(e)} id="entry" rows="3"></textarea>
           </div>
-          <button onClick={this.updateEntry} type="button" className="btn btn-primary">Save</button>
+          <button id="entrySaveButton" onClick={this.updateEntry} type="button" className="btn btn-primary">Save</button>
         </form>
 
          <Alert id="entrySaveAlert" bsStyle="success">
