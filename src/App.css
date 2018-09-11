@@ -75,6 +75,7 @@ body {
 
 .registerComponent {
   margin: auto;
+  margin-bottom: 15px;
   width: 60%;
 }
 

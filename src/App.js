@@ -29,8 +29,10 @@ class App extends Component {
       user: null,
       email: "",
       password: "",
+      confirm_password: "",
       login_email: "",
       login_password: "",
+      warning: "",
     }
     this.updateEntry = this.updateEntry.bind(this);
     this.entryHasChanged = this.entryHasChanged.bind(this);
@@ -147,32 +149,37 @@ class App extends Component {
   }
 
   registerUser() {
-    // create firebase user with email and password
-    auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
-    .then(() => {
+    // password must be confirmed
+    if (this.state.password != this.state.confirm_password) {
+      this.setState({ warning: "Your password is not matching" });
+    } else {
+      // create firebase user with email and password
+      auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(() => {
 
-      // create default 365 documents for each user with 365 predefined questions
-        var user = auth.currentUser();
+        // create default 365 documents for each user with 365 predefined questions
+          var user = auth.currentUser();
 
-        for (var i = 0; i < 365; i++) { 
-          db.collection(user.email).doc(dates[i]).set({
-            prompt: prompts[i],
-            entry: [],
-        })
-        .then(function() {
-            console.log("Document successfully written!");
-        })
-        .catch(function(error) {
-            console.error("Error writing document: ", error);
-        });
-        };
-    }
-    ).catch(function(error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
+          for (var i = 0; i < 365; i++) { 
+            db.collection(user.email).doc(dates[i]).set({
+              prompt: prompts[i],
+              entry: [],
+          })
+          .then(function() {
+              console.log("Document successfully written!");
+          })
+          .catch(function(error) {
+              console.error("Error writing document: ", error);
+          });
+          };
+      }
+      ).catch(function(error) {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          console.log(errorCode);
+          console.log(errorMessage);
       });
+    }
   }
 
   render() {
@@ -219,6 +226,11 @@ class App extends Component {
         </div>
         :
         <div className = "registerContainer"> 
+          {this.state.warning==""? null :
+            <div class="alert alert-warning" role="alert">
+            {this.state.warning}     
+          </div> 
+          }
           <div className="card registerComponent">
             <div className="card-body">
                 <div className="card-contents">
@@ -238,6 +250,7 @@ class App extends Component {
                         <h5 className="card-title">Register Here!</h5>
                         <input type="email" className="form-control register-input" placeholder="Email Address" aria-label="Email Address" value={this.state.email} onChange = {(event) => this.setState({email: event.target.value})} aria-describedby="basic-addon1"></input>
                         <input type="password" className="form-control register-input" placeholder="Password" aria-label="Password" value={this.state.password} onChange = {(event) => this.setState({password: event.target.value})} aria-describedby="basic-addon1"></input>
+                        <input type="password" className="form-control register-input" placeholder="Password" aria-label="Password" value={this.state.confirm_password} onChange = {(event) => this.setState({confirm_password: event.target.value})} aria-describedby="basic-addon1"></input>
                         <button type="submit" className="btn btn-primary">Register</button>
                     </form>
                 </div>
