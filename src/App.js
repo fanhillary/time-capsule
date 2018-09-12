@@ -11,7 +11,7 @@ db.settings(settings);
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
-
+const daysInYear = 366;
 // get today's date globally
 var today = new Date();
 
@@ -37,15 +37,17 @@ class App extends Component {
     this.updateEntry = this.updateEntry.bind(this);
     this.entryHasChanged = this.entryHasChanged.bind(this);
     this.registerUser = this.registerUser.bind(this);
+    this.logOut = this.logOut.bind(this);
   }
 
   /*
-  * Function Name: componentDidMount()
-  * Function Description: called after component mounts, get today's state
-  * Paramters: None.
-  * Return: None.
+  * Function Name: componentWillMount()
+  * Function Description: Set up firebase listener to check if user logs in at anytime.
+  *                       If so, set state user appropriately.
+  * Parameters: none.
+  * Return: none.
   */
-  componentDidMount() {
+  componentWillMount() {
     // check for user logged in or not
     this.fireBaseListener = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -57,7 +59,26 @@ class App extends Component {
         console.log("not logged in -app.js");
       }
     });
+  }
 
+  /*
+  * Function Name: componentWillUnmount()
+  * Function Description: firebaseListener must be safely unmounted.
+  * Parameters: none.
+  * Return: none.
+  */
+  componentWillUnmount() {
+    this.fireBaseListener();
+  }
+
+  /*
+  * Function Name: componentDidMount()
+  * Function Description: called after component mounts, get today's state
+  * Paramters: None.
+  * Return: None.
+  */
+  componentDidMount() {
+    console.log(prompts.length);
     // update today's state
     this.setState({ month: monthNames[today.getMonth()]});
     this.setState({ date: today.getDate()});
@@ -71,7 +92,9 @@ class App extends Component {
     // if user is logged in, get their data
     if (this.state.user) {
       // const for firestore access to appropriate document
-      var docRef = db.collection(this.state.user).doc(monthNames[today.getMonth()]+ " " + today.getDate());
+      var user = auth.currentUser;
+
+      var docRef = db.collection(user.uid).doc(monthNames[today.getMonth()]+ " " + today.getDate());
 
       // get today's prompt and previous entries
       docRef.get().then((doc) => {
@@ -109,7 +132,9 @@ class App extends Component {
 */
   updateEntry() {
     var updatedEntries = document.getElementById("entry").value.concat(this.state.previousEntries)
-    var docRef = db.collection(this.state.user).doc(monthNames[today.getMonth()]+ " " + today.getDate());
+    var user = auth.currentUser;
+
+    var docRef = db.collection(user.uid).doc(monthNames[today.getMonth()]+ " " + today.getDate());
 
     // update the data for that date on firestore
     docRef.set({
@@ -148,25 +173,33 @@ class App extends Component {
     document.getElementById("entrySaveButton").disabled = false;
   }
 
-  registerUser() {
+  /*
+  * Function Name: registerUser(e)
+  * Function Description: Upon register button click, create user if password is confirmed.
+  *                       Generate new firestore collection for user based on prompts.
+  * Parameters: e - onSubmit event for preventing default.
+  * Return: none.
+  */
+  registerUser(e) {
+    e.preventDefault();
     // password must be confirmed
-    if (this.state.password != this.state.confirm_password) {
+    if (this.state.password !== this.state.confirm_password) {
       this.setState({ warning: "Your password is not matching" });
+      
     } else {
       // create firebase user with email and password
       auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
 
         // create default 365 documents for each user with 365 predefined questions
-          var user = auth.currentUser();
+          var user = auth.currentUser;
 
-          for (var i = 0; i < 365; i++) { 
-            db.collection(user.email).doc(dates[i]).set({
+          for (var i = 0; i < daysInYear; i++) { 
+            console.log(dates[i]);
+            console.log(prompts[i]);
+            db.collection(user.uid).doc(dates[i]).set({
               prompt: prompts[i],
-              entry: [],
-          })
-          .then(function() {
-              console.log("Document successfully written!");
+              entry: [""],
           })
           .catch(function(error) {
               console.error("Error writing document: ", error);
@@ -182,11 +215,28 @@ class App extends Component {
     }
   }
 
+  /*
+  * Function Name: logOut()
+  * Function Description: Upon log out button click, function is called to sign user out of firebase
+  * Parameters: none.
+  * Return: none.
+  */
+  logOut() {
+    // sign out the user
+    auth.signOut().then(function() {
+      this.setState({user: null});
+    }).catch(function(error) {
+      console.log(error)
+    });
+  }
+
   render() {
     return (
       <div className="App">
       {this.state.user? 
         <div>
+          <button type="button" onClick={this.logOut} className="btn btn-dark logOut">Log Out</button>
+
           <div className="today-date"> 
             <h3 className = "display-date" >{this.state.month} {this.state.date}, {this.state.year} </h3>
             <h2 className = "display-prompt"> {this.state.prompt} </h2>
@@ -198,7 +248,7 @@ class App extends Component {
             <button id="entrySaveButton" onClick={this.updateEntry} type="button" className="btn btn-primary">Save</button>
           </form>
 
-          <div id="entrySaveAlert" class="alert alert-success" role="alert">
+          <div id="entrySaveAlert" className="alert alert-success" role="alert">
             Entry successfully saved!        
           </div>
 
@@ -246,7 +296,7 @@ class App extends Component {
           <div className="card registerComponent">
             <div className="card-body">
                 <div className="card-contents">
-                    <form onSubmit={this.registerUser}>
+                    <form onSubmit={e => this.registerUser(e)}>
                         <h5 className="card-title">Register Here!</h5>
                         <input type="email" className="form-control register-input" placeholder="Email Address" aria-label="Email Address" value={this.state.email} onChange = {(event) => this.setState({email: event.target.value})} aria-describedby="basic-addon1"></input>
                         <input type="password" className="form-control register-input" placeholder="Password" aria-label="Password" value={this.state.password} onChange = {(event) => this.setState({password: event.target.value})} aria-describedby="basic-addon1"></input>

@@ -82,3 +82,8 @@ body {
 .register-input {
   margin: 10px;
 }
+
+.logOut {
+  margin: 20px;
+  display: block;
+}
