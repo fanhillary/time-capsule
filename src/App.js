@@ -91,38 +91,41 @@ class App extends Component {
 
     // if user is logged in, get their data
     if (this.state.user) {
-      // const for firestore access to appropriate document
-      var user = auth.currentUser;
-
-      var docRef = db.collection(user.uid).doc(monthNames[today.getMonth()]+ " " + today.getDate());
-
-      // get today's prompt and previous entries
-      docRef.get().then((doc) => {
-        if (doc.exists) {
-          var data = doc.data()
-          console.log(data);
-          this.setState({ prompt: data['prompt']});
-          this.setState({ entries: data['entry']});
-          this.setState({ currentEntry: data['entry'][0]});
-
-          // convert to at least 5 previous entries
-          var prevEntries5Years = data['entry'].splice(1,data['entry'].length-1);
-          for (var i = 0; i< 5; i++) {
-            if(!prevEntries5Years[i]) {
-              prevEntries5Years.push("You haven't logged up to here yet");
-            }
-          }
-          this.setState({ previousEntries: prevEntries5Years});
-          console.log(this.state.previousEntries);
-        } else {
-          console.log("no document found in firestore");
-        }
-      }).catch(function(error) {
-        console.log("error getting doc:" + error);
-      });
+      this.getData();
     }
   }
 
+  getData() {
+    // const for firestore access to appropriate document
+    var user = auth.currentUser;
+
+    var docRef = db.collection(user.uid).doc(monthNames[today.getMonth()]+ " " + today.getDate());
+
+    // get today's prompt and previous entries
+    docRef.get().then((doc) => {
+      if (doc.exists) {
+        var data = doc.data()
+        console.log(data);
+        this.setState({ prompt: data['prompt']});
+        this.setState({ entries: data['entry']});
+        this.setState({ currentEntry: data['entry'][0]});
+
+        // convert to at least 5 previous entries
+        var prevEntries5Years = data['entry'].splice(1,data['entry'].length-1);
+        for (var i = 0; i< 5; i++) {
+          if(!prevEntries5Years[i]) {
+            prevEntries5Years.push("You haven't logged up to here yet");
+          }
+        }
+        this.setState({ previousEntries: prevEntries5Years});
+        console.log(this.state.previousEntries);
+      } else {
+        console.log("no document found in firestore");
+      }
+    }).catch(function(error) {
+      console.log("error getting doc:" + error);
+    });
+  }
 
 /*
 * Function Name: updateEntry()
@@ -205,6 +208,8 @@ class App extends Component {
               console.error("Error writing document: ", error);
           });
           };
+
+          this.getData();
       }
       ).catch(function(error) {
           var errorCode = error.code;
