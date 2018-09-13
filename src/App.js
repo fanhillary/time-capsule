@@ -39,6 +39,10 @@ class App extends Component {
     this.registerUser = this.registerUser.bind(this);
     this.logOut = this.logOut.bind(this);
     this.getData = this.getData.bind(this);
+    this.left = this.left.bind(this);
+    this.right = this.right.bind(this);
+    this.today= this.today.bind(this);
+
   }
 
   /*
@@ -49,12 +53,16 @@ class App extends Component {
   * Return: none.
   */
   componentWillMount() {
+    // update today's state
+    this.setState({ month: monthNames[today.getMonth()]});
+    this.setState({ date: today.getDate()});
+    this.setState({ year: today.getFullYear()});
     // check for user logged in or not
     this.fireBaseListener = auth.onAuthStateChanged((user) => {
       if (user) {
         console.log("logged in - app.js");
         this.setState({ user: user });
-        this.getData();
+        this.getData(monthNames[today.getMonth()], today.getDate());
 
       } else {
         this.setState({ user: null });
@@ -80,24 +88,17 @@ class App extends Component {
   * Return: None.
   */
   componentDidMount() {
-    console.log(prompts.length);
-    // update today's state
-    this.setState({ month: monthNames[today.getMonth()]});
-    this.setState({ date: today.getDate()});
-    this.setState({ year: today.getFullYear()});
-
     // disable the save button upon load
     if (document.getElementById("entrySaveButton")) {
       document.getElementById("entrySaveButton").disabled = true;
     }
   }
 
-  getData() {
+  getData(month, date) {
     // const for firestore access to appropriate document
     var user = auth.currentUser;
 
-    var docRef = db.collection(user.uid).doc(monthNames[today.getMonth()]+ " " + today.getDate());
-
+    var docRef = db.collection(user.uid).doc(month+ " " + date);
     // get today's prompt and previous entries
     docRef.get().then((doc) => {
       if (doc.exists) {
@@ -115,7 +116,6 @@ class App extends Component {
           }
         }
         this.setState({ previousEntries: prevEntries5Years});
-        console.log(this.state.previousEntries);
       } else {
         console.log("no document found in firestore");
       }
@@ -136,7 +136,7 @@ class App extends Component {
     newEntry[0] = document.getElementById("entry").value;
     var user = auth.currentUser;
 
-    var docRef = db.collection(user.uid).doc(monthNames[today.getMonth()]+ " " + today.getDate());
+    var docRef = db.collection(user.uid).doc(this.state.month+ " " + this.state.date);
 
     // update the data for that date on firestore
     docRef.set({
@@ -205,7 +205,7 @@ class App extends Component {
           });
           };
 
-          this.getData();
+          this.getData(monthNames[today.getMonth()], today.getDate());
       }
       ).catch(function(error) {
           var errorCode = error.code;
@@ -231,6 +231,34 @@ class App extends Component {
     });
   }
 
+  left() {
+    var leftDate = new Date(this.state.month + " " + this.state.date + ", " + this.state.year );
+    leftDate.setDate(leftDate.getDate() - 1);
+
+    this.setState({ month: monthNames[leftDate.getMonth()]});
+    this.setState({ date: leftDate.getDate()});
+    this.setState({ year: leftDate.getFullYear()});
+    
+    this.getData(monthNames[leftDate.getMonth()], leftDate.getDate());
+  }
+
+  right() {
+    var rightDate = new Date(this.state.month + " " + this.state.date + ", " + this.state.year );
+    rightDate.setDate(rightDate.getDate() + 1);
+
+    this.setState({ month: monthNames[rightDate.getMonth()]});
+    this.setState({ date: rightDate.getDate()});
+    this.setState({ year: rightDate.getFullYear()});
+    
+    this.getData(monthNames[rightDate.getMonth()], rightDate.getDate());
+  }
+
+  today() {
+    // update today's state
+    this.setState({ month: monthNames[today.getMonth()]});
+    this.setState({ date: today.getDate()});
+    this.setState({ year: today.getFullYear()});
+  }
   render() {
     return (
       <div className="App">
@@ -239,14 +267,24 @@ class App extends Component {
           <button type="button" className="btn btn-dark calendar">Calendar</button>
           <button type="button" onClick={this.logOut} className="btn btn-dark logOut">Log Out</button>
 
+          <button type="button" onClick={this.left} className="btn btn-dark left-arrow">Previous</button>
+          <button type="button" onClick={this.right} className="btn btn-dark right-arrow">Next</button>
+
           <div className="today-date"> 
             <h3 className = "display-date" >{this.state.month} {this.state.date}, {this.state.year} </h3>
             <h2 className = "display-prompt"> {this.state.prompt} </h2>
           </div>
           <form>
-            <div className="form-group">
-              <textarea className= "form-control entry-textarea" placeholder="Enter today's entry" value={this.state.currentEntry} onChange={e => this.entryHasChanged(e)} id="entry" rows="3"></textarea>
+            {this.state.month === monthNames[today.getMonth()] && this.state.date === today.getDate() && this.state.year === today.getFullYear()?
+              <div className="form-group">
+                <textarea className= "form-control entry-textarea" placeholder="Enter today's entry" value={this.state.currentEntry} onChange={e => this.entryHasChanged(e)} id="entry" rows="3"></textarea>
+              </div>
+              :
+              <div className="form-group">
+              <textarea className= "form-control entry-textarea" value={this.state.currentEntry} placeholder="Can't edit a post from another day" onChange={e => this.entryHasChanged(e)} id="entry" rows="3" readOnly></textarea>
             </div>
+            }
+            
             <button id="entrySaveButton" onClick={this.updateEntry} type="button" className="btn btn-primary">Save</button>
           </form>
 
