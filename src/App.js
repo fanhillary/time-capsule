@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import {auth, db} from "./firebase.js";
 import {dates, prompts} from "./prompts.js";
+import ArrowKeysReact from 'arrow-keys-react';
 
 
 const settings = {timestampsInSnapshots: true};
@@ -43,6 +44,20 @@ class App extends Component {
     this.next = this.next.bind(this);
     this.today= this.today.bind(this);
 
+    ArrowKeysReact.config({
+      left: () => {
+        console.log('left key detected.');
+      },
+      right: () => {
+        console.log('right key detected.');
+      },
+      up: () => {
+        console.log('up key detected.');
+      },
+      down: () => {
+        console.log('down key detected.');
+      }
+    });
   }
 
   /*
@@ -261,7 +276,7 @@ class App extends Component {
   }
   render() {
     return (
-      <div className="App">
+      <div {...ArrowKeysReact.events} className="App">
       {this.state.user? 
         <div>
           <button type="button" className="btn btn-dark calendar">Calendar</button>
@@ -290,7 +305,7 @@ class App extends Component {
           </div>
 
 
-          <div classname="nav-buttons">
+          <div className="nav-buttons">
             <button type="button" onClick={this.previous} className="btn btn-dark previous"> &#8666; Previous</button>
             <button type="button" onClick={this.next} className="btn btn-dark next">Next  &#8667; </button>
           </div>
@@ -320,7 +335,7 @@ class App extends Component {
         </div>
         :
         <div className = "register-container"> 
-          {this.state.warning==""? null :
+          {this.state.warning ===""? null :
             <div class="alert alert-warning" role="alert">
             {this.state.warning}     
           </div> 

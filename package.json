@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "arrow-keys-react": "^1.0.6",
     "firebase": "^5.4.2",
     "react": "^16.5.0",
     "react-bootstrap": "^0.32.4",
