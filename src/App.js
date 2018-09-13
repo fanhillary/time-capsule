@@ -38,6 +38,7 @@ class App extends Component {
     this.entryHasChanged = this.entryHasChanged.bind(this);
     this.registerUser = this.registerUser.bind(this);
     this.logOut = this.logOut.bind(this);
+    this.getData = this.getData.bind(this);
   }
 
   /*
@@ -53,6 +54,7 @@ class App extends Component {
       if (user) {
         console.log("logged in - app.js");
         this.setState({ user: user });
+        this.getData();
 
       } else {
         this.setState({ user: null });
@@ -87,11 +89,6 @@ class App extends Component {
     // disable the save button upon load
     if (document.getElementById("entrySaveButton")) {
       document.getElementById("entrySaveButton").disabled = true;
-    }
-
-    // if user is logged in, get their data
-    if (this.state.user) {
-      this.getData();
     }
   }
 
@@ -134,7 +131,9 @@ class App extends Component {
 * Returns: None.
 */
   updateEntry() {
-    var updatedEntries = document.getElementById("entry").value.concat(this.state.previousEntries)
+
+    var newEntry = this.state.entries;
+    newEntry[0] = document.getElementById("entry").value;
     var user = auth.currentUser;
 
     var docRef = db.collection(user.uid).doc(monthNames[today.getMonth()]+ " " + today.getDate());
@@ -142,7 +141,7 @@ class App extends Component {
     // update the data for that date on firestore
     docRef.set({
       prompt: this.state.prompt,
-      entry: updatedEntries,
+      entry: newEntry,
     }).then(function() {
       console.log("entry updated!");
     }).catch(function(error) {
@@ -158,7 +157,6 @@ class App extends Component {
 
     // save button disables
     document.getElementById("entrySaveButton").disabled = true;
-
   }
 
   /*
@@ -198,8 +196,6 @@ class App extends Component {
           var user = auth.currentUser;
 
           for (var i = 0; i < daysInYear; i++) { 
-            console.log(dates[i]);
-            console.log(prompts[i]);
             db.collection(user.uid).doc(dates[i]).set({
               prompt: prompts[i],
               entry: [""],
@@ -240,6 +236,7 @@ class App extends Component {
       <div className="App">
       {this.state.user? 
         <div>
+          <button type="button" className="btn btn-dark calendar">Calendar</button>
           <button type="button" onClick={this.logOut} className="btn btn-dark logOut">Log Out</button>
 
           <div className="today-date"> 
