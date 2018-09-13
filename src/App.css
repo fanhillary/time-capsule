@@ -52,7 +52,7 @@ body {
 .accordion {
   width: 80%;
   margin: auto;
-  margin-top: 100px;
+  margin-top: 80px;
 }
 /* .display-date {
   position: absolute;
@@ -68,12 +68,12 @@ body {
   transition: opacity 1s linear;
 } 
 
-.registerContainer {
+.register-container {
   text-align: center;
   padding: 10%;
 }
 
-.registerComponent {
+.register-component {
   margin: auto;
   margin-bottom: 15px;
   width: 60%;
@@ -83,7 +83,7 @@ body {
   margin: 10px;
 }
 
-.logOut {
+.logout {
   display: block;
   position: absolute;
   left: 90%;
@@ -94,5 +94,22 @@ body {
   display: block;
   position: absolute;
   left: 80%;
+  right: 10%;
+}
+
+.nav-buttons {
+  text-align: right;
+}
+
+.previous {
+  margin-top: 20px;
+  position: absolute;
+  left: 10%;
+  right: 90%;
+}
+
+.next {
+  margin-top: 20px;
+  position: absolute;
   right: 10%;
 }

@@ -39,8 +39,8 @@ class App extends Component {
     this.registerUser = this.registerUser.bind(this);
     this.logOut = this.logOut.bind(this);
     this.getData = this.getData.bind(this);
-    this.left = this.left.bind(this);
-    this.right = this.right.bind(this);
+    this.previous = this.previous.bind(this);
+    this.next = this.next.bind(this);
     this.today= this.today.bind(this);
 
   }
@@ -231,7 +231,7 @@ class App extends Component {
     });
   }
 
-  left() {
+  previous() {
     var leftDate = new Date(this.state.month + " " + this.state.date + ", " + this.state.year );
     leftDate.setDate(leftDate.getDate() - 1);
 
@@ -242,7 +242,7 @@ class App extends Component {
     this.getData(monthNames[leftDate.getMonth()], leftDate.getDate());
   }
 
-  right() {
+  next() {
     var rightDate = new Date(this.state.month + " " + this.state.date + ", " + this.state.year );
     rightDate.setDate(rightDate.getDate() + 1);
 
@@ -265,10 +265,8 @@ class App extends Component {
       {this.state.user? 
         <div>
           <button type="button" className="btn btn-dark calendar">Calendar</button>
-          <button type="button" onClick={this.logOut} className="btn btn-dark logOut">Log Out</button>
+          <button type="button" onClick={this.logOut} className="btn btn-dark logout">Log Out</button>
 
-          <button type="button" onClick={this.left} className="btn btn-dark left-arrow">Previous</button>
-          <button type="button" onClick={this.right} className="btn btn-dark right-arrow">Next</button>
 
           <div className="today-date"> 
             <h3 className = "display-date" >{this.state.month} {this.state.date}, {this.state.year} </h3>
@@ -287,10 +285,16 @@ class App extends Component {
             
             <button id="entrySaveButton" onClick={this.updateEntry} type="button" className="btn btn-primary">Save</button>
           </form>
-
           <div id="entrySaveAlert" className="alert alert-success" role="alert">
             Entry successfully saved!        
           </div>
+
+
+          <div classname="nav-buttons">
+            <button type="button" onClick={this.previous} className="btn btn-dark previous"> &#8666; Previous</button>
+            <button type="button" onClick={this.next} className="btn btn-dark next">Next  &#8667; </button>
+          </div>
+
 
 
           <div className="accordion" id="accordion">
@@ -315,13 +319,13 @@ class App extends Component {
             </div>
         </div>
         :
-        <div className = "registerContainer"> 
+        <div className = "register-container"> 
           {this.state.warning==""? null :
             <div class="alert alert-warning" role="alert">
             {this.state.warning}     
           </div> 
           }
-          <div className="card registerComponent">
+          <div className="card register-component">
             <div className="card-body">
                 <div className="card-contents">
                     <form onSubmit={this.loginUser}>
@@ -333,7 +337,7 @@ class App extends Component {
                 </div>
             </div>
           </div>
-          <div className="card registerComponent">
+          <div className="card register-component">
             <div className="card-body">
                 <div className="card-contents">
                     <form onSubmit={e => this.registerUser(e)}>
