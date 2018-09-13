@@ -40,8 +40,7 @@ class App extends Component {
     this.registerUser = this.registerUser.bind(this);
     this.logOut = this.logOut.bind(this);
     this.getData = this.getData.bind(this);
-    this.previous = this.previous.bind(this);
-    this.next = this.next.bind(this);
+    this.navDate = this.navDate.bind(this);
     this.today= this.today.bind(this);
 
     ArrowKeysReact.config({
@@ -51,12 +50,6 @@ class App extends Component {
       right: () => {
         console.log('right key detected.');
       },
-      up: () => {
-        console.log('up key detected.');
-      },
-      down: () => {
-        console.log('down key detected.');
-      }
     });
   }
 
@@ -109,6 +102,14 @@ class App extends Component {
     }
   }
 
+/*
+  * Function Name: getData(month, date)
+  * Function Description: Gets the prompt and entries from firestore according to specified date.
+  *                       Alters entries to have at least 5 previous years.
+  * Parameters: month - string - the month to query to firestore.
+  *             date - integer - the date to query to firestore.
+  * Return: none.
+  */
   getData(month, date) {
     // const for firestore access to appropriate document
     var user = auth.currentUser;
@@ -220,6 +221,7 @@ class App extends Component {
           });
           };
 
+          // get the data for today's date upon registration
           this.getData(monthNames[today.getMonth()], today.getDate());
       }
       ).catch(function(error) {
@@ -231,7 +233,14 @@ class App extends Component {
     }
   }
 
+/*
+  * Function Name: loginUser(e)
+  * Function Description: Upon login button click, login user and get today's data
+  * Parameters: e - login onSubmit event for preventing default.
+  * Return: none.
+  */
   loginUser(e) {
+    // prevent default submission for firebase sign in
     e.preventDefault();
 
     //sign in the user with email and password via firebase
@@ -267,34 +276,46 @@ class App extends Component {
     });
   }
 
-  previous() {
-    var leftDate = new Date(this.state.month + " " + this.state.date + ", " + this.state.year );
-    leftDate.setDate(leftDate.getDate() - 1);
 
-    this.setState({ month: monthNames[leftDate.getMonth()]});
-    this.setState({ date: leftDate.getDate()});
-    this.setState({ year: leftDate.getFullYear()});
+  /*
+  * Function Name: navDate(flag);
+  * Function Description: Called upon next or previous button click, changes state to new date
+  * Parameters: e - onClick Event - for checking if activation is from previous or next button
+  * Return: none.
+  */
+ navDate(e) {
+   // get current date
+    var newDate = new Date(this.state.month + " " + this.state.date + ", " + this.state.year );
     
-    this.getData(monthNames[leftDate.getMonth()], leftDate.getDate());
+    // according to flag, change the date
+    if (e.target.value === "previous") {
+      newDate.setDate(newDate.getDate() - 1);
+    } else if (e.target.value === "next") {
+      newDate.setDate(newDate.getDate() + 1);
+    }
+
+    // set state to new date
+    this.setState({ month: monthNames[newDate.getMonth()]});
+    this.setState({ date: newDate.getDate()});
+    this.setState({ year: newDate.getFullYear()});
+    
+    // get the data for the new state
+    this.getData(monthNames[newDate.getMonth()], newDate.getDate());
   }
 
-  next() {
-    var rightDate = new Date(this.state.month + " " + this.state.date + ", " + this.state.year );
-    rightDate.setDate(rightDate.getDate() + 1);
-
-    this.setState({ month: monthNames[rightDate.getMonth()]});
-    this.setState({ date: rightDate.getDate()});
-    this.setState({ year: rightDate.getFullYear()});
-    
-    this.getData(monthNames[rightDate.getMonth()], rightDate.getDate());
-  }
-
+ /*
+  * Function Name: today()
+  * Function Description: Upon today button click, change the state to today's date.
+  * Parameters: none.
+  * Return: none.
+  */
   today() {
-    // update today's state
+    // update state to today's date
     this.setState({ month: monthNames[today.getMonth()]});
     this.setState({ date: today.getDate()});
     this.setState({ year: today.getFullYear()});
   }
+
   render() {
     return (
       <div {...ArrowKeysReact.events} className="App">
@@ -327,8 +348,8 @@ class App extends Component {
 
 
           <div className="nav-buttons">
-            <button type="button" onClick={this.previous} className="btn btn-dark previous"> &#8666; Previous</button>
-            <button type="button" onClick={this.next} className="btn btn-dark next">Next  &#8667; </button>
+            <button type="button" onClick={e => this.navDate(e)} value ="previous" className="btn btn-dark previous"> &#8666; Previous</button>
+            <button type="button" onClick={e => this.navDate(e)} value="next" className="btn btn-dark next">Next  &#8667; </button>
           </div>
 
 
