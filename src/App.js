@@ -231,6 +231,27 @@ class App extends Component {
     }
   }
 
+  loginUser(e) {
+    e.preventDefault();
+
+    //sign in the user with email and password via firebase
+    auth.signInWithEmailAndPassword(this.state.login_email, this.state.login_password)
+    .then((result) => {
+        const user = result.user;
+
+        // set the state of the user, clear daily completion flag, redirect to home
+        this.setState({ user: user });
+        this.getData(monthNames[today.getMonth()], today.getDate());
+
+        // set error messages for login page
+    }).catch(function(error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log(errorCode);
+        console.log(errorMessage);
+    });
+}
+
   /*
   * Function Name: logOut()
   * Function Description: Upon log out button click, function is called to sign user out of firebase
@@ -343,7 +364,7 @@ class App extends Component {
           <div className="card register-component">
             <div className="card-body">
                 <div className="card-contents">
-                    <form onSubmit={this.loginUser}>
+                    <form onSubmit={e => this.loginUser(e)}>
                         <h5 className="card-title">Login Here!</h5> 
                         <input type="email" className="form-control register-input" placeholder="Email Address" aria-label="Email Address" value={this.state.login_email} onChange = {(event) => this.setState({login_email: event.target.value})} aria-describedby="basic-addon1"></input>
                         <input type="password" className="form-control register-input" placeholder="Password" aria-label="Password" value={this.state.login_password} onChange = {(event) => this.setState({login_password: event.target.value})} aria-describedby="basic-addon1"></input>
