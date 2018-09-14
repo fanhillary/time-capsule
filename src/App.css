@@ -84,10 +84,17 @@ body {
   right: 10%;
 }
 
-.calendar {
+.calendar-button {
   display: block;
   position: absolute;
   right: 20%;
+}
+
+.calendar {
+  position: absolute;
+  right: 20%;
+  top: 10%;
+  display: none;
 }
 
 .nav-buttons {
@@ -105,4 +112,9 @@ body {
   margin-top: 20px;
   position: absolute;
   right: 10%;
+}
+
+.today {
+  position: absolute;
+  left: 10%;
 }

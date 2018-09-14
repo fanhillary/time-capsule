@@ -3,7 +3,7 @@ import './App.css';
 import {auth, db} from "./firebase.js";
 import {dates, prompts} from "./prompts.js";
 import ArrowKeysReact from 'arrow-keys-react';
-
+import Calendar from 'react-calendar'
 
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
@@ -314,14 +314,38 @@ class App extends Component {
     this.setState({ year: today.getFullYear()});
   }
 
+  changeDateByCalendar(date) { 
+    this.setState({ month: monthNames[date.getMonth()]});
+    this.setState({ date: date.getDate()});
+    this.setState({ year: date.getFullYear()});
+
+    // get the data for the new state
+    this.getData(monthNames[date.getMonth()], date.getDate());
+  }
+
+  showCalendar() {
+    document.getElementById("calendar").style.display = "block";
+  }
+
+  hideCalendar() {
+    // hide calendar
+    if (document.getElementById("calendar")) {
+      document.getElementById("calendar").style.display = "none";
+    }
+  }
+
   render() {
     return (
-      <div {...ArrowKeysReact.events} className="App" tabIndex="1">
+      <div onClick = {this.hideCalendar} {...ArrowKeysReact.events} className="App" tabIndex="1">
       {this.state.user? 
         <div>
-          <button type="button" className="btn btn-dark calendar">Calendar</button>
+          <button type="button" onClick = {this.showCalendar} className="btn btn-dark calendar-button">Calendar</button>
+          <Calendar id="calendar" className="calendar" onChange = {e => this.changeDateByCalendar(e)} value={new Date(this.state.month + " " + this.state.date + ", " + this.state.year )} />
           <button type="button" onClick={this.logOut} className="btn btn-dark logout">Log Out</button>
-
+          
+          {this.state.month === monthNames[today.getMonth()] && this.state.date === today.getDate() && this.state.year === today.getFullYear()?
+            null : <button type="button" onClick={this.today} className="btn btn-dark today">Return to Today</button>
+          }
 
           <div className="today-date"> 
             <h3 >{this.state.month} {this.state.date}, {this.state.year} </h3>
