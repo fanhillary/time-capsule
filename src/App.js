@@ -45,8 +45,8 @@ class App extends Component {
 
     // for navigation with arrow keys
     ArrowKeysReact.config({
-      left: () => { this.navDate("previous"); },
-      right: () => { this.navDate("next"); },
+      left: () => { if (document.activeElement.id !== "entry") {this.navDate("previous")}; },
+      right: () => { if (document.activeElement.id !== "entry") {this.navDate("next")}; },
     });
   }
 
@@ -327,7 +327,7 @@ class App extends Component {
             <h3 >{this.state.month} {this.state.date}, {this.state.year} </h3>
             <h2 className = "display-prompt"> {this.state.prompt} </h2>
           </div>
-          <form>
+          <form >
             {this.state.month === monthNames[today.getMonth()] && this.state.date === today.getDate() && this.state.year === today.getFullYear()?
               <div className="form-group">
                 <textarea className= "form-control entry-textarea" placeholder="Enter today's entry" value={this.state.currentEntry} onChange={e => this.entryHasChanged(e)} id="entry" rows="3"></textarea>
