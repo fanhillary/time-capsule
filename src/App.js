@@ -338,11 +338,11 @@ class App extends Component {
   * Return: none.
   */
   toggleCalendar() {
-    var calendar = document.getElementsByClassName("calendar");
-    if (calendar[0].style.display === "none") {
-      calendar[0].style.display = "block";
+    var calendar = document.getElementsByClassName("calendar")[0];
+    if (calendar.style.display === "none") {
+      calendar.style.display = "block";
     } else {
-      calendar[0].style.display = "none";
+      calendar.style.display = "none";
     }
   }
 
@@ -374,7 +374,7 @@ class App extends Component {
             </div>
             }
             
-            <button id="entrySaveButton" onClick={this.updateEntry} type="button" className="btn btn-primary">Save</button>
+            <button id="entrySaveButton" onClick={this.updateEntry} type="button" className="btn btn-primary">Save Entry</button>
           </form>
           <div id="entrySaveAlert" className="alert alert-success" role="alert">
             Entry successfully saved!        
