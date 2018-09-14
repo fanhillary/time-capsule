@@ -54,11 +54,6 @@ body {
   margin: auto;
   margin-top: 80px;
 }
-/* .display-date {
-  position: absolute;
-  margin-left: 10%;
-} */
-
 
 #entrySaveAlert {
   width: 80%;
@@ -86,15 +81,13 @@ body {
 .logout {
   display: block;
   position: absolute;
-  left: 90%;
   right: 10%;
 }
 
 .calendar {
   display: block;
   position: absolute;
-  left: 80%;
-  right: 10%;
+  right: 20%;
 }
 
 .nav-buttons {

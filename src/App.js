@@ -43,13 +43,10 @@ class App extends Component {
     this.navDate = this.navDate.bind(this);
     this.today= this.today.bind(this);
 
+    // for navigation with arrow keys
     ArrowKeysReact.config({
-      left: () => {
-        console.log('left key detected.');
-      },
-      right: () => {
-        console.log('right key detected.');
-      },
+      left: () => { this.navDate("previous"); },
+      right: () => { this.navDate("next"); },
     });
   }
 
@@ -280,17 +277,18 @@ class App extends Component {
   /*
   * Function Name: navDate(flag);
   * Function Description: Called upon next or previous button click, changes state to new date
-  * Parameters: e - onClick Event - for checking if activation is from previous or next button
+  * Parameters: flag - string - "previous": flag for indicating to go to previous date.
+  *                           - "next": flag for indicating to go to next date.
   * Return: none.
   */
- navDate(e) {
+ navDate(flag) {
    // get current date
     var newDate = new Date(this.state.month + " " + this.state.date + ", " + this.state.year );
     
     // according to flag, change the date
-    if (e.target.value === "previous") {
+    if (flag === "previous") {
       newDate.setDate(newDate.getDate() - 1);
-    } else if (e.target.value === "next") {
+    } else if (flag === "next") {
       newDate.setDate(newDate.getDate() + 1);
     }
 
@@ -318,7 +316,7 @@ class App extends Component {
 
   render() {
     return (
-      <div {...ArrowKeysReact.events} className="App">
+      <div {...ArrowKeysReact.events} className="App" tabIndex="1">
       {this.state.user? 
         <div>
           <button type="button" className="btn btn-dark calendar">Calendar</button>
@@ -326,7 +324,7 @@ class App extends Component {
 
 
           <div className="today-date"> 
-            <h3 className = "display-date" >{this.state.month} {this.state.date}, {this.state.year} </h3>
+            <h3 >{this.state.month} {this.state.date}, {this.state.year} </h3>
             <h2 className = "display-prompt"> {this.state.prompt} </h2>
           </div>
           <form>
@@ -348,8 +346,8 @@ class App extends Component {
 
 
           <div className="nav-buttons">
-            <button type="button" onClick={e => this.navDate(e)} value ="previous" className="btn btn-dark previous"> &#8666; Previous</button>
-            <button type="button" onClick={e => this.navDate(e)} value="next" className="btn btn-dark next">Next  &#8667; </button>
+            <button type="button" onClick={e => this.navDate(e.target.value)} value ="previous" className="btn btn-dark previous"> &#8666; Previous</button>
+            <button type="button" onClick={e => this.navDate(e.target.value)} value="next" className="btn btn-dark next">Next  &#8667; </button>
           </div>
 
 
