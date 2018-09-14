@@ -316,6 +316,12 @@ class App extends Component {
      this.getData(monthNames[today.getMonth()], today.getDate());
   }
 
+   /*
+  * Function Name: changeDateByCalendar(date) 
+  * Function Description: change the date to the date selected on calendar by user
+  * Parameters: date - date clicked on calendar
+  * Return: none.
+  */
   changeDateByCalendar(date) { 
     this.setState({ month: monthNames[date.getMonth()]});
     this.setState({ date: date.getDate()});
@@ -325,24 +331,28 @@ class App extends Component {
     this.getData(monthNames[date.getMonth()], date.getDate());
   }
 
-  showCalendar() {
-    document.getElementById("calendar").style.display = "block";
-  }
-
-  hideCalendar() {
-    // hide calendar
-    if (document.getElementById("calendar")) {
-      document.getElementById("calendar").style.display = "none";
+  /*
+  * Function Name: toggleCalendar()
+  * Function Description: Upon Calendar button click, toggle display of calendar
+  * Parameters: none.
+  * Return: none.
+  */
+  toggleCalendar() {
+    var calendar = document.getElementsByClassName("calendar");
+    if (calendar[0].style.display === "none") {
+      calendar[0].style.display = "block";
+    } else {
+      calendar[0].style.display = "none";
     }
   }
 
   render() {
     return (
-      <div onClick = {this.hideCalendar} {...ArrowKeysReact.events} className="App" tabIndex="1">
+      <div {...ArrowKeysReact.events} className="App" tabIndex="1">
       {this.state.user? 
         <div>
-          <button type="button" onClick = {this.showCalendar} className="btn btn-dark calendar-button">Calendar</button>
-          <Calendar id="calendar" className="calendar" onChange = {e => this.changeDateByCalendar(e)} value={new Date(this.state.month + " " + this.state.date + ", " + this.state.year )} />
+          <button type="button" onClick = {this.toggleCalendar} className="btn btn-dark calendar-button">Calendar</button>
+          <Calendar className="calendar" onChange = {e => this.changeDateByCalendar(e)} value={new Date(this.state.month + " " + this.state.date + ", " + this.state.year )} />
           <button type="button" onClick={this.logOut} className="btn btn-dark logout">Log Out</button>
           
           {this.state.month === monthNames[today.getMonth()] && this.state.date === today.getDate() && this.state.year === today.getFullYear()?
