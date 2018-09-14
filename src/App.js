@@ -312,6 +312,8 @@ class App extends Component {
     this.setState({ month: monthNames[today.getMonth()]});
     this.setState({ date: today.getDate()});
     this.setState({ year: today.getFullYear()});
+     // get the data for the new state
+     this.getData(monthNames[today.getMonth()], today.getDate());
   }
 
   changeDateByCalendar(date) { 
