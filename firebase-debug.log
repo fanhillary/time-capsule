@@ -1,0 +1,24 @@
+[debug] [2018-09-14T06:43:29.045Z] ----------------------------------------------------------------------
+[debug] [2018-09-14T06:43:29.047Z] Command:       /usr/local/bin/node /usr/local/bin/firebase serve
+[debug] [2018-09-14T06:43:29.048Z] CLI Version:   4.2.1
+[debug] [2018-09-14T06:43:29.048Z] Platform:      darwin
+[debug] [2018-09-14T06:43:29.048Z] Node Version:  v8.11.3
+[debug] [2018-09-14T06:43:29.048Z] Time:          Thu Sep 13 2018 23:43:29 GMT-0700 (PDT)
+[debug] [2018-09-14T06:43:29.049Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-09-14T06:43:29.065Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-09-14T06:43:29.065Z] > authorizing via signed-in user
+[debug] [2018-09-14T06:43:29.067Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/time-capsule-62e6a  
+ 
+[debug] [2018-09-14T06:43:29.732Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-14T06:43:29.735Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/time-capsule-62e6a  
+ 
+[debug] [2018-09-14T06:43:30.171Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/Users/fanhillary/time-capsule'...
+[info] 
+[debug] [2018-09-14T06:43:30.173Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/334923332666/clients/_:getWebAppConfig  
+ 
+[debug] [2018-09-14T06:43:30.572Z] <<< HTTP RESPONSE 200
+[info] i  hosting[time-capsule-62e6a]: Serving hosting files from: public
+[info] ✔  hosting[time-capsule-62e6a]: Local server: http://localhost:5000

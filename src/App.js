@@ -34,6 +34,7 @@ class App extends Component {
       login_email: "",
       login_password: "",
       warning: "",
+      start_date: null,
     }
     this.updateEntry = this.updateEntry.bind(this);
     this.entryHasChanged = this.entryHasChanged.bind(this);
@@ -42,11 +43,12 @@ class App extends Component {
     this.getData = this.getData.bind(this);
     this.navDate = this.navDate.bind(this);
     this.today= this.today.bind(this);
-
     // for navigation with arrow keys
     ArrowKeysReact.config({
       left: () => { if (document.activeElement.id !== "entry") {this.navDate("previous")}; },
       right: () => { if (document.activeElement.id !== "entry") {this.navDate("next")}; },
+
+      // right: () => { if (document.activeElement.id !== "entry" || !(this.state.month === "December" && this.state.date === "31")) {this.navDate("next")}; },
     });
   }
 
@@ -98,7 +100,6 @@ class App extends Component {
       document.getElementById("entrySaveButton").disabled = true;
     }
   }
-
 /*
   * Function Name: getData(month, date)
   * Function Description: Gets the prompt and entries from firestore according to specified date.
@@ -108,29 +109,43 @@ class App extends Component {
   * Return: none.
   */
   getData(month, date) {
+
     // const for firestore access to appropriate document
     var user = auth.currentUser;
 
-    var docRef = db.collection(user.uid).doc(month+ " " + date);
-    // get today's prompt and previous entries
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        var data = doc.data()
-        console.log(data);
-        this.setState({ prompt: data['prompt']});
-        this.setState({ entries: data['entry']});
-        this.setState({ currentEntry: data['entry'][0]});
-
-        // convert to at least 5 previous entries
-        var prevEntries5Years = data['entry'].splice(1,data['entry'].length-1);
-        for (var i = 0; i< 5; i++) {
-          if(!prevEntries5Years[i]) {
-            prevEntries5Years.push("You haven't logged up to here yet");
+    var docRef = db.collection(user.uid).doc("user");
+    // get the start date
+    docRef.get().then((startDoc) => {
+      if (startDoc.exists) {
+        var startData = startDoc.data()
+        this.setState({ start_date: startData['start_date'] });
+        
+        // get today's prompt and previous entries
+        docRef.collection('entries').doc(month+ " " + date).get().then((doc) => {
+          if (doc.exists) {
+            var data = doc.data()
+            console.log(data);
+            var currentYearIndex = today.getFullYear()-(this.state.start_date.toDate().getFullYear());
+            this.setState({ prompt: data['prompt']});
+            this.setState({ entries: data['entry']});
+            this.setState({ currentEntry: data['entry'][currentYearIndex]});
+    
+            // convert to at least 5 previous entries
+            var prevEntries5Years = data['entry'].splice(0,currentYearIndex).reverse();
+            for (var i = 0; i< 5; i++) {
+              if(!prevEntries5Years[i]) {
+                prevEntries5Years.push("You haven't logged up to here yet");
+              }
+            }
+            this.setState({ previousEntries: prevEntries5Years});
+          } else {
+            console.log("no document found in firestore");
           }
-        }
-        this.setState({ previousEntries: prevEntries5Years});
+        }).catch(function(error) {
+          console.log("error getting doc:" + error);
+        });
       } else {
-        console.log("no document found in firestore");
+        console.log("no user found");
       }
     }).catch(function(error) {
       console.log("error getting doc:" + error);
@@ -146,11 +161,12 @@ class App extends Component {
   updateEntry() {
 
     var newEntry = this.state.entries;
-    newEntry[0] = document.getElementById("entry").value;
+    var currentYearIndex = today.getFullYear()-(this.state.start_date.toDate()).getFullYear();
+
+    newEntry[currentYearIndex] = document.getElementById("entry").value;
     var user = auth.currentUser;
 
-    var docRef = db.collection(user.uid).doc(this.state.month+ " " + this.state.date);
-
+    var docRef = db.collection(user.uid).doc("user").collection('entries').doc(this.state.month+ " " + this.state.date);
     // update the data for that date on firestore
     docRef.set({
       prompt: this.state.prompt,
@@ -208,8 +224,13 @@ class App extends Component {
         // create default 365 documents for each user with 365 predefined questions
           var user = auth.currentUser;
 
+          // store the start date of the user
+          db.collection(user.uid).doc("user").set({
+            start_date: new Date(),
+          })
+
           for (var i = 0; i < daysInYear; i++) { 
-            db.collection(user.uid).doc(dates[i]).set({
+            db.collection(user.uid).doc("user").collection('entries').doc(dates[i]).set({
               prompt: prompts[i],
               entry: [""],
           })
@@ -352,7 +373,7 @@ class App extends Component {
       {this.state.user? 
         <div>
           <button type="button" onClick = {this.toggleCalendar} className="btn btn-dark calendar-button">Calendar</button>
-          <Calendar className="calendar" onChange = {e => this.changeDateByCalendar(e)} value={new Date(this.state.month + " " + this.state.date + ", " + this.state.year )} />
+          <Calendar className="calendar" maxDate={new Date("December 31, " + this.state.year)} onChange = {e => this.changeDateByCalendar(e)} value={new Date(this.state.month + " " + this.state.date + ", " + this.state.year )} />
           <button type="button" onClick={this.logOut} className="btn btn-dark logout">Log Out</button>
           
           {this.state.month === monthNames[today.getMonth()] && this.state.date === today.getDate() && this.state.year === today.getFullYear()?

@@ -374,7 +374,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 var getDateArray = function(start, end) {
-    var arr = new Array();
+    var arr = [];
     var dt = new Date(start);
     while (dt <= end) {
         arr.push(monthNames[dt.getMonth()]+" "+dt.getDate());
